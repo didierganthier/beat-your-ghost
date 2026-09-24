@@ -1,60 +1,61 @@
 import './style.css'
-import heroImg from './assets/hero.png'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.ts'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+const app = document.querySelector<HTMLDivElement>('#app')
 
-<div class="ticks"></div>
+if (!app) {
+  throw new Error('App container not found')
+}
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
-
-<div class="ticks"></div>
-<section id="spacer"></section>
+app.innerHTML = `
+  <h1>Beat Your Ghost</h1>
+  <p>Your past moves will come back to haunt you.</p>
+  <canvas id="game" width="800" height="500"></canvas>
 `
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const canvas = document.querySelector<HTMLCanvasElement>('#game')
+
+if (!canvas) {
+  throw new Error('Game canvas not found')
+}
+
+const context = canvas.getContext('2d')
+
+if (!context) {
+  throw new Error('Canvas drawing is unavailable')
+}
+
+const player = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  radius: 10,
+}
+
+const draw = () => {
+  context.clearRect(0, 0, canvas.width, canvas.height)
+
+  context.fillStyle = '#38bdf8'
+  context.beginPath()
+  context.arc(player.x, player.y, player.radius, 0, Math.PI * 2)
+  context.fill()
+}
+
+canvas.addEventListener('mousemove', (event) => {
+  const bounds = canvas.getBoundingClientRect()
+
+  const x = (event.clientX - bounds.left) * (canvas.width / bounds.width)
+  const y = (event.clientY - bounds.top) * (canvas.height / bounds.height)
+
+  player.x = Math.max(
+    player.radius,
+    Math.min(canvas.width - player.radius, x),
+  )
+
+  player.y = Math.max(
+    player.radius,
+    Math.min(canvas.height - player.radius, y),
+  )
+
+  draw()
+})
+
+draw()
